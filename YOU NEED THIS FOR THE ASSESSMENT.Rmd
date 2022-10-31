@@ -4,6 +4,8 @@ output: html_document
 date: "2022-10-24"
 ---
 
+This is needed for Part C)
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
