@@ -1,0 +1,83 @@
+---
+title: "Emerging Adulthood"
+output: html_document
+date: "2022-10-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(janitor)
+```
+
+Let's read in our data
+
+```{r}
+adulthood_data_raw <- read_excel("data/EAMMi2-Data1.2 (3).xlsx")
+adulthood_codebook_raw <- read_excel("data/EAMMi2-Data1.2-Codebook (1).xlsx") %>% 
+  clean_names()
+```
+
+Let's find the questions about defining ourselves.
+
+```{r}
+adulthood_codebook_raw %>% 
+  filter(str_detect(question_text, "defining yourself"))
+```
+
+We can get that column with select!
+
+```{r}
+adulthood_data_raw %>% 
+  select(IDEA_5)
+```
+
+Or we could find all matching columns with `starts_with()`
+
+```{r}
+idea_responses <- adulthood_data_raw %>% 
+  select(ResponseId, starts_with("IDEA_"))
+
+idea_responses_long <- idea_responses %>% 
+  pivot_longer(starts_with("IDEA")) %>% 
+  mutate(value_label = case_when(
+    value == 1 ~ "Strong disagree",
+    value == 2 ~ "Disagree",
+    value == 3 ~ "Agree",
+    value == 4 ~ "Strong agree"
+  ))
+```
+
+Get question text from the codebook!
+
+```{r}
+idea_questions <- adulthood_codebook_raw %>% 
+  select(variable_name, question_text) %>% 
+  filter(str_detect(variable_name, "IDEA_"))
+```
+
+Now we can join these two together:
+
+```{r}
+idea_responses_long %>% 
+  left_join(idea_questions,
+            by = c("name" = "variable_name")) %>% 
+  count(question_text, value_label) %>% 
+  ggplot() +
+  aes(x = n,
+      y = str_wrap(question_text, 30),
+      fill = value_label) +
+  geom_col(position = "fill") +
+  labs(x = "% of respondents",
+       y = "")
+```
+
+# your challenge!
+
+
+
+

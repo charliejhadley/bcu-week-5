@@ -1,0 +1,40 @@
+---
+title: "Week 5"
+output: html_document
+date: "2022-10-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Dataviz Recap
+
+```{r}
+msleep %>% 
+  ggplot() +
+  aes(x = sleep_total,
+      y = sleep_rem,
+      colour = ifelse(vore == "herbi", "No meat", "Some meat")) +
+  geom_point() +
+  scale_colour_manual(values = c("No meat" = "green", "Some meat" = "red"))
+```
+
+
+```{r}
+msleep %>% 
+  count(vore) %>% 
+  mutate(vore = fct_reorder(vore, n)) %>% 
+  ggplot() +
+  aes(x = n,
+      y = vore) + 
+  geom_col() +
+  theme(axis.ticks = element_blank())
+```
+
+
+
+
+
+
